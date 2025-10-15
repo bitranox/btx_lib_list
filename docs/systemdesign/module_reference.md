@@ -15,10 +15,12 @@ Complete
 * src/btx_lib_list/__main__.py
 * src/btx_lib_list/__init__.py
 * src/btx_lib_list/__init__conf__.py
+* src/btx_lib_list/lib_list.py
 * tests/test_cli.py
 * tests/test_module_entry.py
 * tests/test_behaviors.py
 * tests/test_scripts.py
+* tests/test_lib_list.py
 
 ---
 
@@ -90,6 +92,18 @@ stand-in domain.
 * **Output:** Returns ``None``.
 * **Location:** src/btx_lib_list/behaviors.py
 
+### lib_list utilities
+
+* **Purpose:** House the legacy list-processing helpers (deduplication,
+  filtering, chunking, quoting) modernised to follow current clean-code
+  standards while keeping the original signatures and doctests intact.
+* **Input:** Primarily ``list`` objects containing strings or generic values;
+  specific helpers accept optional search strings or chunk sizes.
+* **Output:** Return transformed lists, booleans, or chunked list-of-lists.
+  Mutating helpers such as ``substract_all_keep_sorting`` and ``ls_substract``
+  continue to update the provided lists in place as documented.
+* **Location:** src/btx_lib_list/lib_list.py
+
 ### cli.apply_traceback_preferences
 
 * **Purpose:** Synchronise traceback configuration between the CLI and ``python -m`` paths.
@@ -152,7 +166,9 @@ stand-in domain.
 
 * ``__init__.py`` re-exports behaviour helpers and ``print_info`` for library
   consumers. No legacy compatibility layer remains; new code should import from
-  the canonical module paths.
+  the canonical module paths. The ``lib_list`` helpers are exposed as a module
+  attribute so callers can migrate gradually while enjoying the modernised
+  implementations.
 
 ---
 
