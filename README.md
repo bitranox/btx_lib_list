@@ -223,8 +223,8 @@ bll.ls_double_quote_if_contains_blank(...)
 ```
 
 
-### `btx_lib_list.ls_elements_replace_strings(ls_elements: list[str], s_old: str, s_new: str) -> list[str]`
-Runs `str.replace` on each string element while leaving non-string entries untouched.
+### `btx_lib_list.ls_elements_replace_strings(ls_elements: list[Any], s_old: str, s_new: str) -> list[str]`
+Runs `str.replace` on each string element while leaving non-string entries untouched (return type stays `list[str]` to align with consumer expectations).
 
 Docs: [Module Reference](./docs/systemdesign/module_reference.md#lib_list-utilities)
 

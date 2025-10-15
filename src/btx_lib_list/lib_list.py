@@ -494,7 +494,7 @@ def ls_double_quote_if_contains_blank(ls_elements: list[str]) -> list[str]:
     return [f'"{s_element}"' if " " in s_element else s_element for s_element in ls_elements]
 
 
-def ls_elements_replace_strings(ls_elements: list[str], s_old: str, s_new: str) -> list[str]:
+def ls_elements_replace_strings(ls_elements: list[Any], s_old: str, s_new: str) -> list[str]:
     """Replace substrings within each string element.
 
     Why
@@ -507,14 +507,16 @@ def ls_elements_replace_strings(ls_elements: list[str], s_old: str, s_new: str) 
 
     Parameters
         ls_elements:
-            List composed primarily of strings.
+            List containing values of any type; only string entries are transformed.
         s_old:
             Substring to replace.
         s_new:
             Replacement value used by :meth:`str.replace`.
 
     Returns
-        List containing the transformed elements.
+        List[str] typed collection with replaced substrings. Non-string entries are
+        returned untouched at runtime, so callers should ensure downstream users
+        expect mixed contents.
 
     Side Effects
         None.
@@ -530,7 +532,7 @@ def ls_elements_replace_strings(ls_elements: list[str], s_old: str, s_new: str) 
     if not ls_elements:
         return ls_elements
 
-    return [s_element.replace(s_old, s_new) if isinstance(s_element, str) else s_element for s_element in ls_elements]  # pyright: ignore[reportUnnecessaryIsInstance]
+    return [s_element.replace(s_old, s_new) if isinstance(s_element, str) else s_element for s_element in ls_elements]
 
 
 def ls_lstrip_list(list_of_strings: list[str], chars: str = "") -> list[str]:
