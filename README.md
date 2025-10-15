@@ -98,8 +98,15 @@ Docs: [Module Reference](./docs/systemdesign/module_reference.md#lib_list-utilit
 
 Example:
 ```python
-import btx_lib_list as bll
-bll.deduplicate(...)
+>>> from btx_lib_list import deduplicate
+>>> deduplicate([])
+[]
+>>> sorted(deduplicate(['c', 'b', 'a']))
+['a', 'b', 'c']
+>>> sorted(deduplicate(['b', 'a', 'c', 'b', 'a']))
+['a', 'b', 'c']
+>>> sorted(deduplicate(['x', 'x', 'x', 'y', 'y']))
+['x', 'y']
 ```
 
 
@@ -110,8 +117,15 @@ Docs: [Module Reference](./docs/systemdesign/module_reference.md#lib_list-utilit
 
 Example:
 ```python
-import btx_lib_list as bll
-bll.del_elements_containing(...)
+>>> from btx_lib_list import del_elements_containing
+>>> del_elements_containing(['a', 'abba', 'c'], 'b')
+['a', 'c']
+>>> del_elements_containing(['a', 'abba', 'c'], 'z')
+['a', 'abba', 'c']
+>>> del_elements_containing(['a', 'abba', 'c'], '')
+['a', 'abba', 'c']
+>>> del_elements_containing([], 'b')
+[]
 ```
 
 
@@ -122,8 +136,15 @@ Docs: [Module Reference](./docs/systemdesign/module_reference.md#lib_list-utilit
 
 Example:
 ```python
-import btx_lib_list as bll
-bll.filter_contains(...)
+>>> from btx_lib_list import filter_contains
+>>> filter_contains([], 'bc')
+[]
+>>> filter_contains(['abcd', 'def', 1, None], 'bc')
+['abcd']
+>>> filter_contains(['abc'], '')
+['abc']
+>>> filter_contains(['abc', 123], '')
+['abc']
 ```
 
 
@@ -134,8 +155,11 @@ Docs: [Module Reference](./docs/systemdesign/module_reference.md#lib_list-utilit
 
 Example:
 ```python
-import btx_lib_list as bll
-bll.filter_fnmatch(...)
+>>> from btx_lib_list import filter_fnmatch
+>>> filter_fnmatch([], 'a*')
+[]
+>>> filter_fnmatch(['abc', 'def', 1, None], 'a*')
+['abc']
 ```
 
 
@@ -146,8 +170,15 @@ Docs: [Module Reference](./docs/systemdesign/module_reference.md#lib_list-utilit
 
 Example:
 ```python
-import btx_lib_list as bll
-bll.is_element_containing(...)
+>>> from btx_lib_list import is_element_containing
+>>> is_element_containing([], '')
+False
+>>> is_element_containing(['abcd', 'def', 1, None], '')
+True
+>>> is_element_containing(['abcd', 'def', 1, None], 'bc')
+True
+>>> is_element_containing(['abcd', 'def', 1, None], 'fg')
+False
 ```
 
 
@@ -158,8 +189,13 @@ Docs: [Module Reference](./docs/systemdesign/module_reference.md#lib_list-utilit
 
 Example:
 ```python
-import btx_lib_list as bll
-bll.is_fnmatching(...)
+>>> from btx_lib_list import is_fnmatching
+>>> is_fnmatching([], 'bc')
+False
+>>> is_fnmatching(['abcd', 'def', 1, None], '*bc*')
+True
+>>> is_fnmatching(['abcd', 'def', 1, None], '*1*')
+False
 ```
 
 
@@ -170,8 +206,15 @@ Docs: [Module Reference](./docs/systemdesign/module_reference.md#lib_list-utilit
 
 Example:
 ```python
-import btx_lib_list as bll
-bll.is_fnmatching_one_pattern(...)
+>>> from btx_lib_list import is_fnmatching_one_pattern
+>>> is_fnmatching_one_pattern([], [])
+False
+>>> is_fnmatching_one_pattern(['abcd', 'def', 1, None], [])
+False
+>>> is_fnmatching_one_pattern(['abcd', 'def', 1, None], ['*bc*', '*fg*'])
+True
+>>> is_fnmatching_one_pattern(['abcd', 'def', 1, None], ['*fg*', '*gh*'])
+False
 ```
 
 
@@ -182,8 +225,14 @@ Docs: [Module Reference](./docs/systemdesign/module_reference.md#lib_list-utilit
 
 Example:
 ```python
-import btx_lib_list as bll
-bll.substract_all_keep_sorting(...)
+>>> from btx_lib_list import substract_all_keep_sorting
+>>> substract_all_keep_sorting([], ['a'])
+[]
+>>> substract_all_keep_sorting(['a', 'a'], [])
+['a', 'a']
+>>> minuend = ['a', 'a', 'b']
+>>> substract_all_keep_sorting(minuend, ['a', 'c'])
+['b']
 ```
 
 
@@ -194,8 +243,11 @@ Docs: [Module Reference](./docs/systemdesign/module_reference.md#lib_list-utilit
 
 Example:
 ```python
-import btx_lib_list as bll
-bll.substract_all_unsorted_fast(...)
+>>> from btx_lib_list import substract_all_unsorted_fast
+>>> substract_all_unsorted_fast(['a', 'a', 'b'], ['a', 'c'])
+['b']
+>>> substract_all_unsorted_fast(['a', 'a', 'b'], ['b'])
+['a']
 ```
 
 
@@ -206,8 +258,17 @@ Docs: [Module Reference](./docs/systemdesign/module_reference.md#lib_list-utilit
 
 Example:
 ```python
-import btx_lib_list as bll
-bll.ls_del_empty_elements(...)
+>>> from btx_lib_list import ls_del_empty_elements
+>>> ls_del_empty_elements([])
+[]
+>>> ls_del_empty_elements(['', ''])
+[]
+>>> ls_del_empty_elements(['', '', 'a', None, 'b'])
+['a', 'b']
+>>> ls_del_empty_elements(['   ', '', 'a', None, 'b'])
+['   ', 'a', 'b']
+>>> ls_del_empty_elements(['   ', '', 'a', None, 'b', 0])
+['   ', 'a', 'b']
 ```
 
 
@@ -218,8 +279,13 @@ Docs: [Module Reference](./docs/systemdesign/module_reference.md#lib_list-utilit
 
 Example:
 ```python
-import btx_lib_list as bll
-bll.ls_double_quote_if_contains_blank(...)
+>>> from btx_lib_list import ls_double_quote_if_contains_blank
+>>> ls_double_quote_if_contains_blank([])
+[]
+>>> ls_double_quote_if_contains_blank([''])
+['']
+>>> ls_double_quote_if_contains_blank(['', 'double quote'])
+['', '"double quote"']
 ```
 
 
@@ -230,8 +296,11 @@ Docs: [Module Reference](./docs/systemdesign/module_reference.md#lib_list-utilit
 
 Example:
 ```python
-import btx_lib_list as bll
-bll.ls_elements_replace_strings(...)
+>>> from btx_lib_list import ls_elements_replace_strings
+>>> ls_elements_replace_strings(['a', 'b', 'c', 1], 'a', 'z')
+['z', 'b', 'c', 1]
+>>> ls_elements_replace_strings([], 'a', 'z')
+[]
 ```
 
 
@@ -242,8 +311,11 @@ Docs: [Module Reference](./docs/systemdesign/module_reference.md#lib_list-utilit
 
 Example:
 ```python
-import btx_lib_list as bll
-bll.ls_lstrip_list(...)
+>>> from btx_lib_list import ls_lstrip_list
+>>> ls_lstrip_list(['', '', 'a', 'b', 'c', '', ''])
+['a', 'b', 'c', '', '']
+>>> ls_lstrip_list([])
+[]
 ```
 
 
@@ -254,8 +326,11 @@ Docs: [Module Reference](./docs/systemdesign/module_reference.md#lib_list-utilit
 
 Example:
 ```python
-import btx_lib_list as bll
-bll.ls_rstrip_elements(...)
+>>> from btx_lib_list import ls_rstrip_elements
+>>> ls_rstrip_elements(['  a', 'bbb', 'c   '])
+['  a', 'bbb', 'c']
+>>> ls_rstrip_elements([])
+[]
 ```
 
 
@@ -266,8 +341,11 @@ Docs: [Module Reference](./docs/systemdesign/module_reference.md#lib_list-utilit
 
 Example:
 ```python
-import btx_lib_list as bll
-bll.ls_rstrip_list(...)
+>>> from btx_lib_list import ls_rstrip_list
+>>> ls_rstrip_list(['', '', 'a', 'b', 'c', '', ''])
+['', '', 'a', 'b', 'c']
+>>> ls_rstrip_list([])
+[]
 ```
 
 
@@ -278,8 +356,13 @@ Docs: [Module Reference](./docs/systemdesign/module_reference.md#lib_list-utilit
 
 Example:
 ```python
-import btx_lib_list as bll
-bll.ls_strip_afz(...)
+>>> from btx_lib_list import ls_strip_afz
+>>> ls_strip_afz(['"  a"', "'bbb'", 'ccc', "   'ddd'"])
+['  a', 'bbb', 'ccc', 'ddd']
+>>> ls_strip_afz([])
+[]
+>>> ls_strip_afz(None)
+[]
 ```
 
 
@@ -290,8 +373,11 @@ Docs: [Module Reference](./docs/systemdesign/module_reference.md#lib_list-utilit
 
 Example:
 ```python
-import btx_lib_list as bll
-bll.ls_strip_elements(...)
+>>> from btx_lib_list import ls_strip_elements
+>>> ls_strip_elements(['  a', 'bbb', '   '])
+['a', 'bbb', '']
+>>> ls_strip_elements([])
+[]
 ```
 
 
@@ -302,8 +388,9 @@ Docs: [Module Reference](./docs/systemdesign/module_reference.md#lib_list-utilit
 
 Example:
 ```python
-import btx_lib_list as bll
-bll.ls_strip_list(...)
+>>> from btx_lib_list import ls_strip_list
+>>> ls_strip_list(['', '', 'a', 'b', 'c', '', ''])
+['a', 'b', 'c']
 ```
 
 
@@ -314,8 +401,10 @@ Docs: [Module Reference](./docs/systemdesign/module_reference.md#lib_list-utilit
 
 Example:
 ```python
-import btx_lib_list as bll
-bll.ls_substract(...)
+>>> from btx_lib_list import ls_substract
+>>> minuend = ['a', 'a', 'b']
+>>> ls_substract(minuend, ['a', 'c'])
+['a', 'b']
 ```
 
 
@@ -326,8 +415,13 @@ Docs: [Module Reference](./docs/systemdesign/module_reference.md#lib_list-utilit
 
 Example:
 ```python
-import btx_lib_list as bll
-bll.split_list_into_junks(...)
+>>> from btx_lib_list import split_list_into_junks
+>>> split_list_into_junks([1, 2, 3, 4, 5, 6, 7, 8, 9, 10], junk_size=11)
+[[1, 2, 3, 4, 5, 6, 7, 8, 9, 10]]
+>>> split_list_into_junks([1, 2, 3, 4, 5, 6, 7, 8, 9, 10], junk_size=3)
+[[1, 2, 3], [4, 5, 6], [7, 8, 9], [10]]
+>>> split_list_into_junks([1, 2, 3, 4, 5, 6, 7, 8, 9, 10])
+[[1, 2, 3, 4, 5, 6, 7, 8, 9, 10]]
 ```
 
 
@@ -338,8 +432,11 @@ Docs: [Module Reference](./docs/systemdesign/module_reference.md#lib_list-utilit
 
 Example:
 ```python
-import btx_lib_list as bll
-bll.str_in_list_lower_and_de_double(...)
+>>> from btx_lib_list import str_in_list_lower_and_de_double
+>>> sorted(str_in_list_lower_and_de_double(['a', 'b', 'c', 'b', 'A']))
+['a', 'b', 'c']
+>>> str_in_list_lower_and_de_double([])
+[]
 ```
 
 
@@ -350,8 +447,11 @@ Docs: [Module Reference](./docs/systemdesign/module_reference.md#lib_list-utilit
 
 Example:
 ```python
-import btx_lib_list as bll
-bll.str_in_list_non_case_sensitive(...)
+>>> from btx_lib_list import str_in_list_non_case_sensitive
+>>> str_in_list_non_case_sensitive('aba', ['abc', 'cde'])
+False
+>>> str_in_list_non_case_sensitive('aBa', ['abc', 'Aba'])
+True
 ```
 
 
@@ -362,8 +462,11 @@ Docs: [Module Reference](./docs/systemdesign/module_reference.md#lib_list-utilit
 
 Example:
 ```python
-import btx_lib_list as bll
-bll.str_in_list_to_lower(...)
+>>> from btx_lib_list import str_in_list_to_lower
+>>> str_in_list_to_lower(['A', 'b', 'C'])
+['a', 'b', 'c']
+>>> str_in_list_to_lower([])
+[]
 ```
 
 
@@ -374,8 +477,11 @@ Docs: [Module Reference](./docs/systemdesign/module_reference.md#lib_list-utilit
 
 Example:
 ```python
-import btx_lib_list as bll
-bll.strip_and_add_non_empty_args_to_list(...)
+>>> from btx_lib_list import strip_and_add_non_empty_args_to_list
+>>> strip_and_add_non_empty_args_to_list('a  ', '  b', 'c', '', '  ')
+['a', 'b', 'c']
+>>> strip_and_add_non_empty_args_to_list()
+[]
 ```
 
 
