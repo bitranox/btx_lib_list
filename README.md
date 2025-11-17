@@ -11,6 +11,7 @@
 [![codecov](https://codecov.io/gh/bitranox/btx_lib_list/graph/badge.svg?token=UFBaUDIgRk)](https://codecov.io/gh/bitranox/btx_lib_list)
 [![Maintainability](https://qlty.sh/badges/041ba2c1-37d6-40bb-85a0-ec5a8a0aca0c/maintainability.svg)](https://qlty.sh/gh/bitranox/projects/btx_lib_list)
 [![Known Vulnerabilities](https://snyk.io/test/github/bitranox/btx_lib_list/badge.svg)](https://snyk.io/test/github/bitranox/btx_lib_list)
+[![security: bandit](https://img.shields.io/badge/security-bandit-yellow.svg)](https://github.com/PyCQA/bandit)
 
 - small list helpers
 
