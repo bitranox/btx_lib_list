@@ -34,6 +34,13 @@ author_email = "bitranox@gmail.com"
 #: Console-script name published by the package.
 shell_command = "btx-lib-list"
 
+#: Vendor identifier for lib_layered_config paths (macOS/Windows)
+LAYEREDCONF_VENDOR: str = "bitranox"
+#: Application display name for lib_layered_config paths (macOS/Windows)
+LAYEREDCONF_APP: str = "Btx Lib List"
+#: Configuration slug for lib_layered_config Linux paths and environment variables
+LAYEREDCONF_SLUG: str = "btx-lib-list"
+
 
 def print_info() -> None:
     """Print the summarised metadata block used by the CLI ``info`` command.
