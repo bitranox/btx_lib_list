@@ -3,6 +3,16 @@
 All notable changes to this project will be documented in this file following
 the [Keep a Changelog](https://keepachangelog.com/) format.
 
+## [1.0.2] - 2025-12-08
+
+### Changed
+- Refactored test suite to clean architecture principles with improved clarity and real behavior testing.
+- Organized tests into focused classes where each test verifies exactly one behavior.
+- Added OS-specific markers (`os_agnostic`, `os_windows`, `os_macos`, `os_posix`, `os_linux`) for environment-aware test execution.
+- Centralized shared fixtures in `conftest.py` for better discoverability and reduced duplication.
+- Replaced stub-heavy tests with real behavior tests in `test_module_entry.py`.
+- Simplified `test_metadata.py` to use direct imports instead of file parsing.
+
 ## [1.0.1] - 2025-10-15
 
 - enhance Readme examples

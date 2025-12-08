@@ -1,101 +1,166 @@
-"""Metadata tales celebrating the pinned project portrait."""
+"""Metadata tests: package info lives where it should.
+
+Tests verify real metadata against pyproject.toml.
+No mocking - direct comparison of actual values.
+Each test checks exactly one piece of information.
+"""
 
 from __future__ import annotations
 
+import re
 from pathlib import Path
 from typing import Any, cast
-import runpy
-import tomllib
 
 import pytest
+
+try:
+    import tomllib
+except ImportError:
+    import tomli as tomllib  # type: ignore[import-not-found, no-redef]
+
+from btx_lib_list import __init__conf__
+
+
+# ---------------------------------------------------------------------------
+# Constants
+# ---------------------------------------------------------------------------
 
 PROJECT_ROOT = Path(__file__).resolve().parent.parent
 PYPROJECT_PATH = PROJECT_ROOT / "pyproject.toml"
 TARGET_FIELDS = ("name", "title", "version", "homepage", "author", "author_email", "shell_command")
 
 
-def _load_pyproject() -> dict[str, Any]:
-    with PYPROJECT_PATH.open("rb") as stream:
-        return tomllib.load(stream)
+# ---------------------------------------------------------------------------
+# Fixtures
+# ---------------------------------------------------------------------------
 
 
-def _resolve_init_conf_path(pyproject: dict[str, Any]) -> Path:
-    project_table = cast(dict[str, Any], pyproject["project"])
-    tool_table = cast(dict[str, Any], pyproject.get("tool", {}))
-    hatch_table = cast(dict[str, Any], tool_table.get("hatch", {}))
-    targets_table = cast(dict[str, Any], cast(dict[str, Any], hatch_table.get("build", {})).get("targets", {}))
-    wheel_table = cast(dict[str, Any], targets_table.get("wheel", {}))
-    packages = cast(list[Any], wheel_table.get("packages", []))
-
-    for package_entry in packages:
-        if isinstance(package_entry, str):
-            candidate = PROJECT_ROOT / package_entry / "__init__conf__.py"
-            if candidate.is_file():
-                return candidate
-
-    fallback = PROJECT_ROOT / "src" / project_table["name"].replace("-", "_") / "__init__conf__.py"
-    if fallback.is_file():
-        return fallback
-
-    raise AssertionError("Unable to locate __init__conf__.py")
+@pytest.fixture(scope="module")
+def pyproject_data() -> dict[str, Any]:
+    """Load and parse pyproject.toml once per test module."""
+    return tomllib.loads(PYPROJECT_PATH.read_text(encoding="utf-8"))
 
 
-def _load_init_conf_metadata(init_conf_path: Path) -> dict[str, str]:
-    fragments: list[str] = []
-    for raw_line in init_conf_path.read_text(encoding="utf-8").splitlines():
-        stripped = raw_line.strip()
-        for key in TARGET_FIELDS:
-            prefix = f"{key} = "
-            if stripped.startswith(prefix):
-                fragments.append(stripped)
-                break
-    if not fragments:
-        raise AssertionError("No metadata assignments found in __init__conf__.py")
-    metadata_text = "[metadata]\n" + "\n".join(fragments)
-    parsed = tomllib.loads(metadata_text)
-    metadata_table = cast(dict[str, str], parsed["metadata"])
-    return metadata_table
-
-
-def _load_init_conf_module(init_conf_path: Path) -> dict[str, Any]:
-    return runpy.run_path(str(init_conf_path))
+# ---------------------------------------------------------------------------
+# print_info: Output Verification
+# ---------------------------------------------------------------------------
 
 
 @pytest.mark.os_agnostic
-def test_when_print_info_runs_it_lists_every_field(capsys: pytest.CaptureFixture[str]) -> None:
-    pyproject = _load_pyproject()
-    init_conf_path = _resolve_init_conf_path(pyproject)
-    init_conf_module = _load_init_conf_module(init_conf_path)
+class TestPrintInfo:
+    """print_info outputs the expected metadata."""
 
-    print_info = init_conf_module["print_info"]
-    assert callable(print_info)
+    def test_is_callable(self) -> None:
+        """print_info is a callable function."""
+        assert callable(__init__conf__.print_info)
 
-    print_info()
+    def test_outputs_expected_fields(self, capsys: pytest.CaptureFixture[str]) -> None:
+        """print_info outputs all documented fields."""
+        __init__conf__.print_info()
+        output = capsys.readouterr().out
 
-    captured = capsys.readouterr().out
+        for field in TARGET_FIELDS:
+            assert field in output
 
-    for label in TARGET_FIELDS:
-        assert f"{label}" in captured
+    def test_shows_package_name(self, capsys: pytest.CaptureFixture[str]) -> None:
+        """print_info shows the package name in the header."""
+        __init__conf__.print_info()
+        output = capsys.readouterr().out
+
+        assert f"Info for {__init__conf__.name}:" in output
+
+
+# ---------------------------------------------------------------------------
+# Metadata Constants Match pyproject.toml
+# ---------------------------------------------------------------------------
 
 
 @pytest.mark.os_agnostic
-def test_the_metadata_constants_match_the_project() -> None:
-    pyproject = _load_pyproject()
-    project_table = cast(dict[str, Any], pyproject["project"])
-    init_conf_path = _resolve_init_conf_path(pyproject)
-    metadata = _load_init_conf_metadata(init_conf_path)
+class TestMetadataMatchesPyproject:
+    """Module constants match pyproject.toml values."""
 
-    urls = cast(dict[str, str], project_table.get("urls", {}))
-    authors = cast(list[dict[str, str]], project_table.get("authors", []))
-    scripts = cast(dict[str, Any], project_table.get("scripts", {}))
+    def test_name_matches(self, pyproject_data: dict[str, Any]) -> None:
+        """The package name matches pyproject.toml."""
+        project_table = cast(dict[str, Any], pyproject_data["project"])
+        expected = project_table["name"]
 
-    assert authors, "pyproject.toml must declare at least one author entry"
-    assert "Homepage" in urls, "pyproject.toml must define project.urls.Homepage"
+        assert __init__conf__.name == expected
 
-    assert metadata["name"] == project_table["name"]
-    assert metadata["title"] == project_table["description"]
-    assert metadata["version"] == project_table["version"]
-    assert metadata["homepage"] == urls["Homepage"]
-    assert metadata["author"] == authors[0]["name"]
-    assert metadata["author_email"] == authors[0]["email"]
-    assert metadata["shell_command"] in scripts
+    def test_version_matches(self, pyproject_data: dict[str, Any]) -> None:
+        """The package version matches pyproject.toml."""
+        project_table = cast(dict[str, Any], pyproject_data["project"])
+        expected = project_table["version"]
+
+        assert __init__conf__.version == expected
+
+    def test_title_matches_description(self, pyproject_data: dict[str, Any]) -> None:
+        """The title matches pyproject.toml description."""
+        project_table = cast(dict[str, Any], pyproject_data["project"])
+        expected = project_table["description"]
+
+        assert __init__conf__.title == expected
+
+    def test_homepage_matches(self, pyproject_data: dict[str, Any]) -> None:
+        """The homepage URL matches pyproject.toml."""
+        project_table = cast(dict[str, Any], pyproject_data["project"])
+        urls = cast(dict[str, str], project_table.get("urls", {}))
+        expected = urls["Homepage"]
+
+        assert __init__conf__.homepage == expected
+
+    def test_author_matches(self, pyproject_data: dict[str, Any]) -> None:
+        """The author name matches pyproject.toml."""
+        project_table = cast(dict[str, Any], pyproject_data["project"])
+        authors = cast(list[dict[str, str]], project_table.get("authors", []))
+        expected = authors[0]["name"]
+
+        assert __init__conf__.author == expected
+
+    def test_author_email_matches(self, pyproject_data: dict[str, Any]) -> None:
+        """The author email matches pyproject.toml."""
+        project_table = cast(dict[str, Any], pyproject_data["project"])
+        authors = cast(list[dict[str, str]], project_table.get("authors", []))
+        expected = authors[0]["email"]
+
+        assert __init__conf__.author_email == expected
+
+    def test_shell_command_in_scripts(self, pyproject_data: dict[str, Any]) -> None:
+        """The shell command exists in pyproject.toml scripts."""
+        project_table = cast(dict[str, Any], pyproject_data["project"])
+        scripts = cast(dict[str, Any], project_table.get("scripts", {}))
+
+        assert __init__conf__.shell_command in scripts
+
+
+# ---------------------------------------------------------------------------
+# pyproject.toml Validation
+# ---------------------------------------------------------------------------
+
+
+@pytest.mark.os_agnostic
+class TestPyprojectValidity:
+    """pyproject.toml contains valid, well-formed data."""
+
+    def test_has_at_least_one_author(self, pyproject_data: dict[str, Any]) -> None:
+        """pyproject.toml defines at least one author."""
+        project_table = cast(dict[str, Any], pyproject_data["project"])
+        authors = cast(list[dict[str, str]], project_table.get("authors", []))
+
+        assert len(authors) >= 1
+
+    def test_has_homepage_url(self, pyproject_data: dict[str, Any]) -> None:
+        """pyproject.toml defines a homepage URL."""
+        project_table = cast(dict[str, Any], pyproject_data["project"])
+        urls = cast(dict[str, str], project_table.get("urls", {}))
+        homepage = urls.get("Homepage")
+
+        assert homepage is not None
+        assert len(homepage) > 0
+
+    def test_version_is_semver(self, pyproject_data: dict[str, Any]) -> None:
+        """pyproject.toml version follows semantic versioning."""
+        project_table = cast(dict[str, Any], pyproject_data["project"])
+        version = project_table["version"]
+        semver_pattern = r"^\d+\.\d+\.\d+(-[a-zA-Z0-9.]+)?$"
+
+        assert re.match(semver_pattern, version) is not None

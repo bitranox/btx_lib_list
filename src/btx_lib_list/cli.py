@@ -39,7 +39,8 @@ behaviour remains consistent regardless of entry point.
 
 from __future__ import annotations
 
-from typing import Final, Optional, Sequence, Tuple
+from dataclasses import dataclass
+from typing import Final, Optional, Sequence
 
 import rich_click as click
 
@@ -55,7 +56,21 @@ CLICK_CONTEXT_SETTINGS = {"help_option_names": ["-h", "--help"]}  # noqa: C408
 TRACEBACK_SUMMARY_LIMIT: Final[int] = 500
 #: Character budget used when verbose tracebacks are enabled.
 TRACEBACK_VERBOSE_LIMIT: Final[int] = 10_000
-TracebackState = Tuple[bool, bool]
+
+
+@dataclass
+class TracebackState:
+    """Typed container for traceback configuration snapshot."""
+
+    traceback_enabled: bool
+    force_color: bool
+
+
+@dataclass
+class CliContext:
+    """Typed container for Click context object backing store."""
+
+    traceback: bool = False
 
 
 def apply_traceback_preferences(enabled: bool) -> None:
@@ -92,18 +107,18 @@ def snapshot_traceback_state() -> TracebackState:
     Returns
     -------
     TracebackState
-        Tuple of ``(traceback_enabled, force_color)``.
+        Dataclass with ``traceback_enabled`` and ``force_color`` fields.
 
     Examples
     --------
     >>> snapshot = snapshot_traceback_state()
-    >>> isinstance(snapshot, tuple)
+    >>> isinstance(snapshot, TracebackState)
     True
     """
 
-    return (
-        bool(getattr(lib_cli_exit_tools.config, "traceback", False)),
-        bool(getattr(lib_cli_exit_tools.config, "traceback_force_color", False)),
+    return TracebackState(
+        traceback_enabled=bool(getattr(lib_cli_exit_tools.config, "traceback", False)),
+        force_color=bool(getattr(lib_cli_exit_tools.config, "traceback_force_color", False)),
     )
 
 
@@ -113,7 +128,7 @@ def restore_traceback_state(state: TracebackState) -> None:
     Parameters
     ----------
     state:
-        Tuple returned by :func:`snapshot_traceback_state`.
+        TracebackState dataclass returned by :func:`snapshot_traceback_state`.
 
     Examples
     --------
@@ -124,8 +139,8 @@ def restore_traceback_state(state: TracebackState) -> None:
     True
     """
 
-    lib_cli_exit_tools.config.traceback = bool(state[0])
-    lib_cli_exit_tools.config.traceback_force_color = bool(state[1])
+    lib_cli_exit_tools.config.traceback = state.traceback_enabled
+    lib_cli_exit_tools.config.traceback_force_color = state.force_color
 
 
 def _record_traceback_choice(ctx: click.Context, *, enabled: bool) -> None:
@@ -137,8 +152,8 @@ def _record_traceback_choice(ctx: click.Context, *, enabled: bool) -> None:
         flags.
 
     What
-        Ensures the context has a dict backing store and persists the boolean
-        under the ``"traceback"`` key.
+        Ensures the context has a typed CliContext backing store and persists
+        the boolean in the ``traceback`` field.
 
     Inputs
         ctx:
@@ -150,8 +165,8 @@ def _record_traceback_choice(ctx: click.Context, *, enabled: bool) -> None:
         Mutates ``ctx.obj``.
     """
 
-    ctx.ensure_object(dict)
-    ctx.obj["traceback"] = enabled
+    ctx.ensure_object(CliContext)
+    ctx.obj.traceback = enabled
 
 
 def _announce_traceback_choice(enabled: bool) -> None:
@@ -380,7 +395,7 @@ def cli(ctx: click.Context, traceback: bool) -> None:
         toggle diagnostic depth without editing configuration files.
 
     What
-        Ensures a dict-based context, stores the ``traceback`` flag, and mirrors
+        Ensures a typed CliContext, stores the ``traceback`` flag, and mirrors
         the value into ``lib_cli_exit_tools.config`` so downstream helpers observe
         the preference. When no subcommand (or options) are provided, the command
         prints help instead of running the domain stub; otherwise the default
