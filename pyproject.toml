@@ -1,6 +1,6 @@
 [project]
 name = "btx_lib_list"
-version = "1.0.2"
+version = "1.0.3"
 description = "Small helpers for list managment"
 readme = "README.md"
 requires-python = ">=3.13"
@@ -141,6 +141,6 @@ layers = [
 
 [tool.pip-audit]
 # Known vulnerabilities to ignore (unfixable or accepted risk)
-# GHSA-4xh5-x5gv-qwph: py library ReDoS (no fix available, low risk)
-# PYSEC-2022-42969: same as above (alias)
-ignore-vulns = ["GHSA-4xh5-x5gv-qwph", "PYSEC-2022-42969", "CVE-2026-25990", "CVE-2026-26007", "CVE-2026-4539", "CVE-2026-25645", "CVE-2026-3219"]
+# PYSEC-2022-42969: py library ReDoS via crafted Subversion info data (no fix available, transitive dep)
+# CVE-2026-3219: pip handles concatenated tar/ZIP archives ambiguously (no fix released; bundled in CI runner)
+ignore-vulns = ["PYSEC-2022-42969", "CVE-2026-3219"]

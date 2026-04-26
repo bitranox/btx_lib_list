@@ -3,6 +3,14 @@
 All notable changes to this project will be documented in this file following
 the [Keep a Changelog](https://keepachangelog.com/) format.
 
+## [1.0.3] - 2026-04-26
+
+### Changed
+- Pruned stale entries from the `pip-audit` ignore list and documented the two remaining accepted-risk advisories inline.
+
+### Fixed
+- Unblocked CI by ignoring `CVE-2026-3219` in `pip-audit`; the runner-bundled `pip 26.0.1` is affected and no upstream fix is available yet.
+
 ## [1.0.2] - 2025-12-08
 
 ### Changed
