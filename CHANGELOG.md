@@ -3,6 +3,15 @@
 All notable changes to this project will be documented in this file following
 the [Keep a Changelog](https://keepachangelog.com/) format.
 
+## [Unreleased]
+
+## [1.0.4] 2026-06-14
+
+### Changed
+- Added a `typed_click.py` facade wrapping rich-click's `option` / `argument` decorators behind explicit, fully-known signatures, keeping the CLI strict-clean under pyright 1.1.410 (`reportUnknownMemberType`) without disabling the rule (ignore isolated to the facade).
+- Migrated build automation from the in-repo `scripts/` package to the external `bmk` tooling (`uvx bmk`); removed the obsolete `scripts/` directory and `[tool.scripts.test]` config; added `[tool.bashate]` settings.
+- Bumped `lib_cli_exit_tools` floor to `>=2.3.2`.
+
 ## [1.0.3] - 2026-04-26
 
 ### Changed

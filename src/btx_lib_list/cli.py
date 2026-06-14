@@ -48,6 +48,7 @@ import lib_cli_exit_tools
 from click.core import ParameterSource
 
 from . import __init__conf__
+from .typed_click import option, version_option
 from .behaviors import emit_greeting, noop_main, raise_intentional_failure
 
 #: Shared Click context flags so help output stays consistent across commands.
@@ -375,12 +376,12 @@ def _run_cli_via_exit_tools(
     context_settings=CLICK_CONTEXT_SETTINGS,
     invoke_without_command=True,
 )
-@click.version_option(
+@version_option(
     version=__init__conf__.version,
     prog_name=__init__conf__.shell_command,
     message=f"{__init__conf__.shell_command} version {__init__conf__.version}",
 )
-@click.option(
+@option(
     "--traceback/--no-traceback",
     is_flag=True,
     default=False,
