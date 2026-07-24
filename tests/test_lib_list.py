@@ -14,7 +14,6 @@ import pytest
 import btx_lib_list
 from btx_lib_list import lib_list
 
-
 # ---------------------------------------------------------------------------
 # deduplicate: Removing Duplicates
 # ---------------------------------------------------------------------------
@@ -683,7 +682,7 @@ class TestLsSubstract:
 
 
 # ---------------------------------------------------------------------------
-# split_list_into_junks: Chunking
+# split_list_into_junks: Chunk Splitting
 # ---------------------------------------------------------------------------
 
 
@@ -737,15 +736,13 @@ class TestSplitListIntoJunks:
     def test_various_sizes(self, junk_size: int) -> None:
         """Various chunk sizes produce correct results."""
         data = list(range(5))
-        expected: list[list[int]] = []
-        for index in range(0, len(data), junk_size):
-            expected.append(data[index : index + junk_size])
+        expected: list[list[int]] = [data[index : index + junk_size] for index in range(0, len(data), junk_size)]
 
         assert lib_list.split_list_into_junks(data, junk_size=junk_size) == expected
 
 
 # ---------------------------------------------------------------------------
-# str_in_list_lower_and_de_double: Normalize and Dedupe
+# str_in_list_lower_and_de_double: Normalize, Then Dedupe
 # ---------------------------------------------------------------------------
 
 

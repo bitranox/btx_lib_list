@@ -5,6 +5,21 @@ the [Keep a Changelog](https://keepachangelog.com/) format.
 
 ## [Unreleased]
 
+## [1.0.5] 2026-07-24 16:18:31
+
+### Fixed
+- Latest ruff (0.16.0, floating dev pin) newly defaults to ~920 rules on a repo with no explicit `[tool.ruff.lint].select`; pinned the curated bitranox rule set instead so CI stopped reddening on unrelated rule families.
+- `T201` (print): swapped `print()` for `sys.stdout.write()` in `__init__conf__.print_info`.
+- `PLR2004` (magic value): named the quote-stripping length threshold in `lib_list.ls_strip_afz`.
+- `UP035` (deprecated import): replaced `typing.ContextManager` with `contextlib.AbstractContextManager` in `__main__.py`.
+- `RUF002` (ambiguous en dash): replaced en dashes with ASCII hyphens in module docstrings.
+- `ERA001` false positives on two test section-header comments that happened to parse as valid Python; reworded them.
+- `PERF401`: replaced a manual test loop with a list comprehension in `test_lib_list.py`.
+
+### Changed
+- Added `[tool.ruff.lint].select` (the bitranox curated rule set) plus `pydocstyle` google convention and per-file-ignores for `tests/*.py` and `src/btx_lib_list/cli.py` (Click's boolean option flags).
+- Ran the mechanical import-sort/dunder-all-sort autofixes (`I001`, `RUF022`, `TC003`) across `src` and `tests`.
+
 ## [1.0.4] 2026-06-14
 
 ### Changed

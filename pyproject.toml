@@ -1,10 +1,10 @@
 [project]
 name = "btx_lib_list"
-version = "1.0.4"
+version = "1.0.5"
 description = "Small helpers for list managment"
 readme = "README.md"
 requires-python = ">=3.13"
-dependencies = ["rich-click>=1.9.8", "lib_cli_exit_tools>=2.3.2"]
+dependencies = ["rich-click>=1.9.8", "lib_cli_exit_tools>=2.3.3"]
 license = { text = "MIT" }
 authors = [{ name = "bitranox", email = "bitranox@gmail.com" }]
 keywords = ["logging", "rich", "cli", "terminal", "ansi"]
@@ -36,7 +36,7 @@ Issues = "https://github.com/bitranox/btx_lib_list/issues"
 dev = [
   "pytest>=9.1.1",
   "pytest-cov>=7.1.0",
-  "ruff>=0.15.21",
+  "ruff>=0.16.0",
   "pyright[nodejs]>=1.1.411",
   "bandit>=1.9.4",
   # 1.5.1 was yanked upstream (unintended breaking changes), so 1.5.0 is the newest usable
@@ -76,9 +76,48 @@ include = ["src/btx_lib_list/py.typed"]
 line-length = 160
 target-version = "py313"
 
+[tool.ruff.lint]
+# ruff 0.16 widened its default rule set to ~920 rules; without an explicit select a bare
+# `ruff check` picks up unrelated families (BLE001, DTZ, TRY, ASYNC, ERA...) that are not this
+# project's lint policy. Pin the curated bitranox rule set so future ruff releases cannot
+# silently re-explode the checked rule count.
+select = [
+  "E", "W",     # pycodestyle
+  "F",           # pyflakes
+  "I",           # isort
+  "N",           # pep8-naming
+  "UP",          # pyupgrade
+  "B",           # bugbear
+  "A",           # builtins shadowing
+  "C4",          # comprehension simplification
+  "SIM",         # simplification
+  "TCH",         # type-checking imports
+  "RUF",         # ruff-specific
+  "G",           # logging format (catches f-string in logger)
+  "T20",         # print statements
+  "PTH",         # pathlib preference
+  "PLC", "PLE",  # pylint conventions/errors
+  "S",           # flake8-bandit security checks
+  "PERF",        # performance anti-patterns
+  "ERA",         # eradicate dead/commented-out code
+  "FBT",         # boolean trap (boolean positional args)
+  "PLR",         # pylint refactor
+  "PLW",         # pylint warnings
+]
+
+[tool.ruff.lint.pydocstyle]
+convention = "google"
+
 [tool.ruff.lint.per-file-ignores]
 # ignore the "unused import sys" in the jupyter notebook - which we need (it is a linter hickup)
 "notebooks/*.ipynb" = ["F401"]
+# Tests: assert is standard, test fixtures have passwords, magic values are clearer inline, temp paths are fine.
+# PLC0415: local/deferred imports are a deliberate test idiom - some tests import inside the test
+# body to exercise import-time and cache behaviour, so moving them to module top would defeat intent.
+"tests/*.py" = ["S101", "S105", "S106", "S108", "T20", "PLR2004", "PLR0913", "FBT001", "FBT003", "PLC0415"]
+# CLI: Click framework injects boolean params for its options; the option-carrying helpers
+# (traceback toggling) mirror that same shape even where Click does not call them directly.
+"src/btx_lib_list/cli.py" = ["FBT001", "FBT002", "PLR0913"]
 
 [tool.pyright]
 typeCheckingMode = "strict"

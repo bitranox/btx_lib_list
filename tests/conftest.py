@@ -12,16 +12,15 @@ Fixture Philosophy:
 from __future__ import annotations
 
 import re
-from collections.abc import Callable, Iterator
 from dataclasses import fields
 from typing import TYPE_CHECKING
 
+import lib_cli_exit_tools
 import pytest
 from click.testing import CliRunner
 
-import lib_cli_exit_tools
-
 if TYPE_CHECKING:
+    from collections.abc import Callable, Iterator
     from typing import Any
 
 

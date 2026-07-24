@@ -7,16 +7,18 @@ Real behavior is preferred over stubs.
 
 from __future__ import annotations
 
-from collections.abc import Callable
-
-import pytest
-from click.testing import CliRunner
+from typing import TYPE_CHECKING
 
 import lib_cli_exit_tools
+import pytest
 
 from btx_lib_list import __init__conf__
 from btx_lib_list import cli as cli_mod
 
+if TYPE_CHECKING:
+    from collections.abc import Callable
+
+    from click.testing import CliRunner
 
 # ---------------------------------------------------------------------------
 # Traceback State: Snapshot Captures State

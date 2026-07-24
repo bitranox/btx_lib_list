@@ -10,23 +10,23 @@ aligned with the Clean Code rules captured in
 
 Contents
 --------
-* :data:`CLICK_CONTEXT_SETTINGS` – shared Click settings ensuring consistent
+* :data:`CLICK_CONTEXT_SETTINGS` - shared Click settings ensuring consistent
   ``--help`` behavior across commands.
-* :func:`apply_traceback_preferences` – helper that synchronises the shared
+* :func:`apply_traceback_preferences` - helper that synchronises the shared
   traceback configuration flags.
-* :func:`snapshot_traceback_state` / :func:`restore_traceback_state` – utilities
+* :func:`snapshot_traceback_state` / :func:`restore_traceback_state` - utilities
   for preserving and reapplying the global traceback preference.
-* :func:`cli` – root command group wiring the global options.
-* :func:`cli_main` – default action when no subcommand is provided.
-* :func:`cli_info`, :func:`cli_hello`, :func:`cli_fail` – subcommands covering
+* :func:`cli` - root command group wiring the global options.
+* :func:`cli_main` - default action when no subcommand is provided.
+* :func:`cli_info`, :func:`cli_hello`, :func:`cli_fail` - subcommands covering
   metadata printing, success path, and failure path.
-* :func:`_record_traceback_choice`, :func:`_announce_traceback_choice` – persist
+* :func:`_record_traceback_choice`, :func:`_announce_traceback_choice` - persist
   traceback preferences across context and shared tooling.
 * :func:`_invoke_cli`, :func:`_current_traceback_mode`, :func:`_traceback_limit`,
-  :func:`_print_exception`, :func:`_run_cli_via_exit_tools` – isolate the error
+  :func:`_print_exception`, :func:`_run_cli_via_exit_tools` - isolate the error
   handling and delegation path.
-* :func:`_restore_when_requested` – restores tracebacks when ``main`` finishes.
-* :func:`main` – composition helper delegating to ``lib_cli_exit_tools`` while
+* :func:`_restore_when_requested` - restores tracebacks when ``main`` finishes.
+* :func:`main` - composition helper delegating to ``lib_cli_exit_tools`` while
   honouring the shared traceback preferences.
 
 System Role
@@ -40,19 +40,21 @@ behaviour remains consistent regardless of entry point.
 from __future__ import annotations
 
 from dataclasses import dataclass
-from typing import Final, Optional, Sequence
-
-import rich_click as click
+from typing import TYPE_CHECKING, Final
 
 import lib_cli_exit_tools
+import rich_click as click
 from click.core import ParameterSource
 
 from . import __init__conf__
-from .typed_click import option, version_option
 from .behaviors import emit_greeting, noop_main, raise_intentional_failure
+from .typed_click import option, version_option
+
+if TYPE_CHECKING:
+    from collections.abc import Sequence
 
 #: Shared Click context flags so help output stays consistent across commands.
-CLICK_CONTEXT_SETTINGS = {"help_option_names": ["-h", "--help"]}  # noqa: C408
+CLICK_CONTEXT_SETTINGS = {"help_option_names": ["-h", "--help"]}
 #: Character budget used when printing truncated tracebacks.
 TRACEBACK_SUMMARY_LIMIT: Final[int] = 500
 #: Character budget used when verbose tracebacks are enabled.
@@ -208,7 +210,7 @@ def _no_subcommand_requested(ctx: click.Context) -> bool:
     return ctx.invoked_subcommand is None
 
 
-def _invoke_cli(argv: Optional[Sequence[str]]) -> int:
+def _invoke_cli(argv: Sequence[str] | None) -> int:
     """Ask ``lib_cli_exit_tools`` to execute the Click command.
 
     Why
@@ -330,7 +332,7 @@ def _show_help(ctx: click.Context) -> None:
 
 
 def _run_cli_via_exit_tools(
-    argv: Optional[Sequence[str]],
+    argv: Sequence[str] | None,
     *,
     summary_limit: int,
     verbose_limit: int,
@@ -357,7 +359,7 @@ def _run_cli_via_exit_tools(
 
     try:
         return _invoke_cli(argv)
-    except BaseException as exc:  # noqa: BLE001 - handled by shared printers
+    except BaseException as exc:
         tracebacks_enabled = _current_traceback_mode()
         apply_traceback_preferences(tracebacks_enabled)
         return _print_exception(
@@ -468,7 +470,7 @@ def cli_fail() -> None:
 
 
 def main(
-    argv: Optional[Sequence[str]] = None,
+    argv: Sequence[str] | None = None,
     *,
     restore_traceback: bool = True,
     summary_limit: int = TRACEBACK_SUMMARY_LIMIT,

@@ -9,10 +9,10 @@ installed console script, including traceback handling and exit-code mapping.
 
 Contents
 --------
-* :func:`_open_cli_session` – wires ``cli_session`` with the agreed limits.
-* :func:`_command_to_run` / :func:`_command_name` – expose the command and label
+* :func:`_open_cli_session` - wires ``cli_session`` with the agreed limits.
+* :func:`_command_to_run` / :func:`_command_name` - expose the command and label
   used by the module entry.
-* :func:`_module_main` – drives execution and returns the exit code.
+* :func:`_module_main` - drives execution and returns the exit code.
 
 System Role
 -----------
@@ -23,12 +23,17 @@ documented in ``docs/systemdesign/module_reference.md``.
 
 from __future__ import annotations
 
-from typing import Callable, ContextManager, Final
+from collections.abc import Callable
+from typing import TYPE_CHECKING, Final
 
 from lib_cli_exit_tools import cli_session
-import rich_click as click
 
 from . import __init__conf__, cli
+
+if TYPE_CHECKING:
+    from contextlib import AbstractContextManager
+
+    import rich_click as click
 
 # Match the CLI defaults so truncation behaviour stays consistent across entry
 # points regardless of whether users call the console script or ``python -m``.
@@ -41,7 +46,7 @@ TRACEBACK_VERBOSE_LIMIT: Final[int] = cli.TRACEBACK_VERBOSE_LIMIT
 CommandRunner = Callable[..., int]
 
 
-def _open_cli_session() -> ContextManager[CommandRunner]:
+def _open_cli_session() -> AbstractContextManager[CommandRunner]:
     """Return the configured ``cli_session`` context manager.
 
     Why
@@ -50,7 +55,7 @@ def _open_cli_session() -> ContextManager[CommandRunner]:
         single place.
 
     Outputs
-        ContextManager[CommandRunner]:
+        AbstractContextManager[CommandRunner]:
             Context manager that yields the callable responsible for invoking
             the Click command.
     """

@@ -19,12 +19,14 @@ present authoritative project information without invoking packaging APIs.
 
 from __future__ import annotations
 
+import sys
+
 #: Distribution name declared in ``pyproject.toml``.
 name = "btx_lib_list"
 #: Human-readable summary shown in CLI help output.
 title = "Small helpers for list managment"
 #: Current release version pulled from ``pyproject.toml`` by automation.
-version = "1.0.4"
+version = "1.0.5"
 #: Repository homepage presented to users.
 homepage = "https://github.com/bitranox/btx_lib_list"
 #: Author attribution surfaced in CLI output.
@@ -71,4 +73,4 @@ def print_info() -> None:
     pad = max(len(label) for label, _ in fields)
     lines = [f"Info for {name}:", ""]
     lines.extend(f"    {label.ljust(pad)} = {value}" for label, value in fields)
-    print("\n".join(lines))
+    sys.stdout.write("\n".join(lines) + "\n")

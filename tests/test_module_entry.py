@@ -9,15 +9,16 @@ from __future__ import annotations
 
 import runpy
 import sys
-from collections.abc import Callable
-
-import pytest
+from typing import TYPE_CHECKING
 
 import lib_cli_exit_tools
+import pytest
 
 from btx_lib_list import __main__ as main_mod
 from btx_lib_list import cli as cli_mod
 
+if TYPE_CHECKING:
+    from collections.abc import Callable
 
 # ---------------------------------------------------------------------------
 # Module Entry: Real Behavior Tests

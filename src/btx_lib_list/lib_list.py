@@ -33,7 +33,7 @@ from __future__ import annotations
 
 import fnmatch
 import sys
-from typing import Any, Optional, Union
+from typing import Any
 
 __all__ = [
     "deduplicate",
@@ -43,8 +43,6 @@ __all__ = [
     "is_element_containing",
     "is_fnmatching",
     "is_fnmatching_one_pattern",
-    "substract_all_keep_sorting",
-    "substract_all_unsorted_fast",
     "ls_del_empty_elements",
     "ls_double_quote_if_contains_blank",
     "ls_elements_replace_strings",
@@ -60,6 +58,8 @@ __all__ = [
     "str_in_list_non_case_sensitive",
     "str_in_list_to_lower",
     "strip_and_add_non_empty_args_to_list",
+    "substract_all_keep_sorting",
+    "substract_all_unsorted_fast",
 ]
 
 
@@ -577,7 +577,7 @@ def ls_lstrip_list(list_of_strings: list[str], chars: str = "") -> list[str]:
     return list_of_strings[index:]
 
 
-def ls_rstrip_elements(ls_elements: list[str], chars: Union[None, str] = None) -> list[str]:
+def ls_rstrip_elements(ls_elements: list[str], chars: str | None = None) -> list[str]:
     """Strip trailing characters from every string element.
 
     Why
@@ -655,7 +655,7 @@ def ls_rstrip_list(list_of_strings: list[str], chars: str = "") -> list[str]:
     return list_of_strings[:index]
 
 
-def ls_strip_afz(ls_elements: Optional[list[str]]) -> list[str]:
+def ls_strip_afz(ls_elements: list[str] | None) -> list[str]:
     """Strip matching quotes from the start and end of each string.
 
     Why
@@ -691,16 +691,18 @@ def ls_strip_afz(ls_elements: Optional[list[str]]) -> list[str]:
     if not ls_elements:
         return []
 
+    min_quoted_length = 2
+
     def _strip_quotes(value: str) -> str:
         value = value.strip()
-        if len(value) >= 2 and value[0] == value[-1] and value[0] in {'"', "'"}:
+        if len(value) >= min_quoted_length and value[0] == value[-1] and value[0] in {'"', "'"}:
             return value[1:-1]
         return value
 
     return [_strip_quotes(s_element) for s_element in ls_elements]
 
 
-def ls_strip_elements(ls_elements: list[str], chars: Union[None, str] = None) -> list[str]:
+def ls_strip_elements(ls_elements: list[str], chars: str | None = None) -> list[str]:
     """Strip leading and trailing characters from each string.
 
     Why
@@ -963,7 +965,7 @@ def str_in_list_to_lower(list_of_strings: list[str]) -> list[str]:
     return [string.lower() for string in list_of_strings]
 
 
-def strip_and_add_non_empty_args_to_list(*args: Optional[str]) -> list[Any]:
+def strip_and_add_non_empty_args_to_list(*args: str | None) -> list[Any]:
     """Collect trimmed arguments into a list while skipping blanks.
 
     Why
