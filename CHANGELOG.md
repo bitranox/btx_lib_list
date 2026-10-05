@@ -5,6 +5,14 @@ the [Keep a Changelog](https://keepachangelog.com/) format.
 
 ## [Unreleased]
 
+## [1.0.6] 2026-10-05 19:21:01
+
+### Fixed
+- `python -m btx_lib_list` now runs `cli.main()`, the function the console scripts run. A usage error (bad flag, unknown command) exited 1 under `python -m` and 2 from the console script; both now exit 2.
+
+### Changed
+- Raised dependency floors: rich-click 1.9.9, lib_cli_exit_tools 2.3.4, plus the dev tool floors.
+
 ## [1.0.5] 2026-07-24 16:18:31
 
 ### Fixed

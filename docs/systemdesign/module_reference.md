@@ -139,20 +139,11 @@ stand-in domain.
   or the exit code produced by ``lib_cli_exit_tools``.
 * **Location:** src/btx_lib_list/cli.py
 
-### __main__._module_main
+### __main__
 
-* **Purpose:** Provide ``python -m`` entry point mirroring the console script.
+* **Purpose:** Provide the ``python -m btx_lib_list`` entry point by running ``cli.main``, the function the console scripts run.
 * **Input:** None.
-* **Output:** Exit code from ``cli.main`` after restoring traceback state.
-* **Location:** src/btx_lib_list/__main__.py
-
-### __main__._open_cli_session / _command_to_run / _command_name
-
-* **Purpose:** Describe the session wiring and command selection used by the
-  module entry point so tests and documentation can reason about the
-  composition.
-* **Output:** Context manager yielding the command runner, the Click command
-  itself, and the shell-facing name.
+* **Output:** ``SystemExit`` carrying the exit code from ``cli.main``.
 * **Location:** src/btx_lib_list/__main__.py
 
 ### __init__conf__.print_info
