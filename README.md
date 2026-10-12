@@ -39,6 +39,35 @@ For alternative install paths (pipx, uv, source builds, etc.), see
   `macos-latest`, `windows-latest`) and cover CPython 3.13 alongside the latest
   available 3.x release provided by Actions.
 
+### Why we recommend uv: supply-chain protection
+
+This repository commits a `uv.lock`. It pins every package the project needs, transitive
+dependencies included, to an exact version and to the hashes of that version's files. The
+`exclude-newer` setting under `[tool.uv]` in `pyproject.toml` adds a cooldown: uv leaves any
+release younger than that out of the lock. CI installs from the lock, so a hijacked release that
+gets pulled again within the cooldown never reaches our builds, and a file whose hash does not
+match is refused.
+
+That protection stays in this repository. The installable package declares only lower bounds
+(`>=`) for its dependencies, so a plain `pip install` takes the newest release of every transitive
+dependency at the moment you run it. If one of them was hijacked an hour earlier, you get the
+hijacked version. `pipx install` and `uv tool install` without options do the same.
+
+To install the command line tool with a cooldown of your own (uv then skips any release younger
+than 7 days, transitive ones included), or to run the exact tree our CI tests:
+
+```bash
+uv tool install --exclude-newer "7 days" btx_lib_list
+git clone https://github.com/bitranox/btx_lib_list.git && cd btx_lib_list && uv sync --locked && uv run btx_lib_list --help
+```
+
+If you depend on btx_lib_list in your own project, give that project the same cooldown (7 days here, as
+an example) and commit the `uv.lock` that `uv add btx_lib_list` writes:
+
+```toml
+[tool.uv]
+exclude-newer = "7 days"
+```
 
 ## Usage
 
@@ -488,14 +517,14 @@ Example:
 
 ## Performance Reference
 
-| Helper group | Representative functions | Complexity | Notes |
-| --- | --- | --- | --- |
-| Deduplication | `deduplicate`, `str_in_list_lower_and_de_double` | O(n) | Uses `set`; ordering and duplicate survivors are not preserved. |
-| Filtering | `filter_contains`, `filter_fnmatch`, `del_elements_containing` | O(n) | Single pass over inputs; non-strings skipped where appropriate. |
-| Ordered subtraction | `substract_all_keep_sorting`, `ls_substract` | O(n·m)`†` | Relies on repeated `list.remove`; best for small collections. |
-| Unordered subtraction | `substract_all_unsorted_fast` | O(n) | Builds a `set`; removes duplicates of survivors. |
-| Chunking | `split_list_into_junks` | O(n) | Iterates once and reuses references for the final chunk. |
-| String trimming | `ls_strip_elements`, `ls_rstrip_elements`, `ls_strip_list` | O(n) | Applies string trimming per element. |
+| Helper group          | Representative functions                                       | Complexity | Notes                                                           |
+|-----------------------|----------------------------------------------------------------|------------|-----------------------------------------------------------------|
+| Deduplication         | `deduplicate`, `str_in_list_lower_and_de_double`               | O(n)       | Uses `set`; ordering and duplicate survivors are not preserved. |
+| Filtering             | `filter_contains`, `filter_fnmatch`, `del_elements_containing` | O(n)       | Single pass over inputs; non-strings skipped where appropriate. |
+| Ordered subtraction   | `substract_all_keep_sorting`, `ls_substract`                   | O(n·m)`†`  | Relies on repeated `list.remove`; best for small collections.   |
+| Unordered subtraction | `substract_all_unsorted_fast`                                  | O(n)       | Builds a `set`; removes duplicates of survivors.                |
+| Chunking              | `split_list_into_junks`                                        | O(n)       | Iterates once and reuses references for the final chunk.        |
+| String trimming       | `ls_strip_elements`, `ls_rstrip_elements`, `ls_strip_list`     | O(n)       | Applies string trimming per element.                            |
 
 `†` `n` = length of the minuend and `m` = distinct subtrahend entries. For large lists prefer the unordered subtraction helper or precompute a lookup set.
 
