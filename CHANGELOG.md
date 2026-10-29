@@ -5,7 +5,7 @@ the [Keep a Changelog](https://keepachangelog.com/) format.
 
 ## [Unreleased]
 
-## [1.0.8] 2026-10-15 16:35:40
+## [1.0.8] - 2026-10-15
 
 ### Fixed
 
@@ -26,7 +26,7 @@ the [Keep a Changelog](https://keepachangelog.com/) format.
   (`pytest_runtest_setup` in `tests/conftest.py`); registered in `pyproject.toml` alone they skipped
   nothing, so a test trusting its marker ran everywhere. `tests/test_platform_markers.py` pins it.
 
-## [1.0.7] 2026-10-12 22:39:45
+## [1.0.7] - 2026-10-12
 
 ### Added
 - Python 3.15 is a supported version: declared in the classifiers, so CI and `make test-all` run it.
@@ -39,7 +39,7 @@ the [Keep a Changelog](https://keepachangelog.com/) format.
   a plain `pip install` from PyPI does not.
 - `rtoml` floor raised to 0.14.0, the first release with Python 3.15 wheels.
 
-## [1.0.6] 2026-10-05 19:21:01
+## [1.0.6] - 2026-10-05
 
 ### Fixed
 - `python -m btx_lib_list` now runs `cli.main()`, the function the console scripts run. A usage error (bad flag, unknown command) exited 1 under `python -m` and 2 from the console script; both now exit 2.
@@ -47,7 +47,7 @@ the [Keep a Changelog](https://keepachangelog.com/) format.
 ### Changed
 - Raised dependency floors: rich-click 1.9.9, lib_cli_exit_tools 2.3.4, plus the dev tool floors.
 
-## [1.0.5] 2026-07-24 16:18:31
+## [1.0.5] - 2026-07-24
 
 ### Fixed
 - Latest ruff (0.16.0, floating dev pin) newly defaults to ~920 rules on a repo with no explicit `[tool.ruff.lint].select`; pinned the curated bitranox rule set instead so CI stopped reddening on unrelated rule families.
@@ -62,7 +62,7 @@ the [Keep a Changelog](https://keepachangelog.com/) format.
 - Added `[tool.ruff.lint].select` (the bitranox curated rule set) plus `pydocstyle` google convention and per-file-ignores for `tests/*.py` and `src/btx_lib_list/cli.py` (Click's boolean option flags).
 - Ran the mechanical import-sort/dunder-all-sort autofixes (`I001`, `RUF022`, `TC003`) across `src` and `tests`.
 
-## [1.0.4] 2026-06-14
+## [1.0.4] - 2026-06-14
 
 ### Changed
 - Added a `typed_click.py` facade wrapping rich-click's `option` / `argument` decorators behind explicit, fully-known signatures, keeping the CLI strict-clean under pyright 1.1.410 (`reportUnknownMemberType`) without disabling the rule (ignore isolated to the facade).
