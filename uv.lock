@@ -7,7 +7,6 @@ exclude-newer = "0001-01-01T00:00:00Z" # This has no effect and is included for 
 exclude-newer-span = "P7D"
 
 [options.exclude-newer-package]
-certifi = "2026-10-23T11:36:17Z"
 hatchling = "2026-10-28T02:27:31Z"
 lib-cli-exit-tools = false
 pytest = "2026-10-27T21:30:21Z"
